@@ -12,7 +12,7 @@ marker.
 
 ## Ownership and terms
 
-FocusGuard is owned by [sandipsahoo2k2](https://github.com/sandipsahoo2k2), who
+FocusGuard is owned by [Sandeep Sahoo](https://github.com/sandipsahoo2k2), who
 decides what is merged. By submitting a contribution you agree that:
 
 - you wrote it yourself, or you have the right to submit it on these terms;

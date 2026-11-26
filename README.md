@@ -173,7 +173,7 @@ Design notes and the reasoning behind each detector are in
 
 ## License
 
-Created and owned by [sandipsahoo2k2](https://github.com/sandipsahoo2k2).
+Created and owned by [Sandeep Sahoo](https://github.com/sandipsahoo2k2).
 
 | You may | You may not |
 |---|---|

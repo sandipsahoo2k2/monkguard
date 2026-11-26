@@ -25,9 +25,10 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js run",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run clean && npm test",
     "test": "npm run build && node --test \"test/*.test.js\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "keywords": [
     "parental-controls",
@@ -46,7 +47,7 @@
     "typescript": "^5.6.3",
     "@types/node": "^22.7.5"
   },
-  "author": "sandipsahoo2k2 (https://github.com/sandipsahoo2k2)",
+  "author": "Sandeep Sahoo (https://github.com/sandipsahoo2k2)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sandipsahoo2k2/focusguard.git"
