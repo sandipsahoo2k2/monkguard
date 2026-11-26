@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
-<title>FocusGuard</title>
+<title>MonkGuard</title>
 <style>
   :root {
     --bg: #0f1216; --card: #181d24; --line: #262d37; --text: #eef2f7;
@@ -112,7 +112,7 @@
 
 <div id="login">
   <div class="card">
-    <h2>FocusGuard</h2>
+    <h2>MonkGuard</h2>
     <input id="pin" type="password" inputmode="numeric" placeholder="PIN" autocomplete="current-password">
     <button class="wide on" id="loginBtn">Unlock</button>
     <p class="dim" id="loginMsg" style="margin:10px 0 0"></p>
@@ -120,7 +120,7 @@
 </div>
 
 <div id="app" hidden>
-  <h1>FocusGuard</h1>
+  <h1>MonkGuard</h1>
   <div class="device" id="device"></div>
   <div id="notices"></div>
 
@@ -340,7 +340,7 @@ async function deriveVerifier(pin, salt, iterations) {
 
 async function proveKnowledge(pin) {
   const res = await fetch('/api/challenge');
-  if (!res.ok) throw new Error('no answer from FocusGuard');
+  if (!res.ok) throw new Error('no answer from MonkGuard');
   const challenge = await res.json();
   const verifier = await deriveVerifier(pin, challenge.salt, challenge.iterations);
   return {
@@ -401,7 +401,7 @@ document.getElementById('loginBtn').onclick = async () => {
     document.getElementById('pin').value = '';
     refresh();
   } catch (e) {
-    message.textContent = 'Could not reach FocusGuard';
+    message.textContent = 'Could not reach MonkGuard';
   } finally {
     button.disabled = false;
     button.textContent = 'Unlock';
@@ -427,7 +427,7 @@ function fmtUntil(iso) {
 
 function render() {
   const d = data;
-  // Which Mac this is. Every Mac runs its own FocusGuard with its own settings,
+  // Which Mac this is. Every Mac runs its own MonkGuard with its own settings,
   // so this page controls this machine and nothing else on the wifi.
   const dev = d.device || {};
   const net = d.network || {};
@@ -452,7 +452,7 @@ function render() {
 
   const until = fmtUntil(d.until);
   let why;
-  if (!d.enabled) why = 'FocusGuard is switched off';
+  if (!d.enabled) why = 'MonkGuard is switched off';
   else if (focus) why = 'Reels, games and long videos are stopped' + (until ? ' until ' + until : '');
   else if (temporary) why = 'Nothing is blocked' + (until ? ' until ' + until : '');
   else if (d.mode === 'free') why = 'Nothing is being blocked, until you change it back';
@@ -489,11 +489,11 @@ function render() {
 
   const notices = [];
   (d.permissionProblems || []).forEach(() =>
-    notices.push('macOS is blocking FocusGuard from reading browser tabs. Open System Settings \u203a Privacy & Security \u203a Automation and switch on your browsers under FocusGuard.'));
+    notices.push('macOS is blocking MonkGuard from reading browser tabs. Open System Settings \u203a Privacy & Security \u203a Automation and switch on your browsers under MonkGuard.'));
   if (net.lanAccess === 'home' && !net.homeNetworkChosen) {
-    notices.push('No home network chosen yet, so only this Mac can open FocusGuard. Trust this network under More.');
+    notices.push('No home network chosen yet, so only this Mac can open MonkGuard. Trust this network under More.');
   } else if (net.lanAccess === 'home' && !net.onHomeNetwork) {
-    notices.push('This Mac is away from the home network, so phones cannot open FocusGuard right now.');
+    notices.push('This Mac is away from the home network, so phones cannot open MonkGuard right now.');
   }
   (d.downtime || []).forEach(x => notices.push(x.detail + ' (' + fmtUntil(x.at) + ')'));
   if (d.breakUntil) notices.push('Break until ' + fmtUntil(d.breakUntil));
@@ -544,7 +544,7 @@ function render() {
     scheduleFilled = true;
   }
 
-  document.title = (dev.name || (dev.addresses || [])[0] || '') + ' · FocusGuard';
+  document.title = (dev.name || (dev.addresses || [])[0] || '') + ' · MonkGuard';
   document.getElementById('log').innerHTML = (d.events || []).map(e =>
     '<li><time>' + fmtUntil(e.at) + '</time>' + esc(label(e)) + '</li>').join('');
 }
@@ -557,7 +557,7 @@ function label(e) {
     app_warning: 'Warned before closing', app_quit: 'Closed an app',
     app_force_quit: 'Force closed an app', verdict: 'Answered',
     mode_changed: 'Mode changed to', temp_unlock: 'Blocking paused',
-    temp_unlock_ended: 'Pause ended', service_downtime: 'FocusGuard was not running',
+    temp_unlock_ended: 'Pause ended', service_downtime: 'MonkGuard was not running',
     unreadable_browser: 'Closed a browser that cannot be checked', login_failed: 'Wrong PIN tried',
     config_edited_externally: 'Settings file edited directly'
   };

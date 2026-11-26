@@ -5,11 +5,11 @@ import { fileURLToPath } from 'node:url';
 import { run } from '../platform/macos/exec.js';
 import { APP_DIR, log } from '../infra/store.js';
 
-export const LABEL = 'com.focusguard.agent';
+export const LABEL = 'com.monkguard.agent';
 const LAUNCH_AGENTS = join(homedir(), 'Library', 'LaunchAgents');
 const PLIST_PATH = join(LAUNCH_AGENTS, `${LABEL}.plist`);
-const LOG_DIR = join(homedir(), 'Library', 'Logs', 'FocusGuard');
-const BUNDLE_PATH = join(APP_DIR, 'FocusGuard.app');
+const LOG_DIR = join(homedir(), 'Library', 'Logs', 'MonkGuard');
+const BUNDLE_PATH = join(APP_DIR, 'MonkGuard.app');
 
 /** dist/app/install.js -> dist/index.js, the CLI the service is started with. */
 const entryPoint = (): string => join(dirname(fileURLToPath(import.meta.url)), '..', 'index.js');
@@ -21,29 +21,29 @@ const entryPoint = (): string => join(dirname(fileURLToPath(import.meta.url)), '
  * quietly invalidates it.
  *
  * Giving the service its own small app bundle, with its own identifier and an
- * ad-hoc signature, fixes all three: the prompt says FocusGuard, the grant is
+ * ad-hoc signature, fixes all three: the prompt says MonkGuard, the grant is
  * ours alone, and it survives node upgrades.
  */
 async function createAppBundle(identity: string): Promise<string> {
   const macOSDir = join(BUNDLE_PATH, 'Contents', 'MacOS');
   mkdirSync(macOSDir, { recursive: true });
 
-  const executable = join(macOSDir, 'FocusGuard');
+  const executable = join(macOSDir, 'MonkGuard');
   copyFileSync(process.execPath, executable);
 
   writeFileSync(join(BUNDLE_PATH, 'Contents', 'Info.plist'), `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleName</key><string>FocusGuard</string>
-  <key>CFBundleDisplayName</key><string>FocusGuard</string>
+  <key>CFBundleName</key><string>MonkGuard</string>
+  <key>CFBundleDisplayName</key><string>MonkGuard</string>
   <key>CFBundleIdentifier</key><string>${LABEL}</string>
-  <key>CFBundleExecutable</key><string>FocusGuard</string>
+  <key>CFBundleExecutable</key><string>MonkGuard</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>1.0</string>
   <key>LSUIElement</key><true/>
   <key>NSAppleEventsUsageDescription</key>
-  <string>FocusGuard checks which pages are open so it can switch off reels and games during focus time.</string>
+  <string>MonkGuard checks which pages are open so it can switch off reels and games during focus time.</string>
 </dict>
 </plist>
 `);
@@ -74,8 +74,8 @@ ${args}
   <key>KeepAlive</key><true/>
   <key>ThrottleInterval</key><integer>10</integer>
   <key>ProcessType</key><string>Interactive</string>
-  <key>StandardOutPath</key><string>${join(LOG_DIR, 'focusguard.log')}</string>
-  <key>StandardErrorPath</key><string>${join(LOG_DIR, 'focusguard.log')}</string>
+  <key>StandardOutPath</key><string>${join(LOG_DIR, 'monkguard.log')}</string>
+  <key>StandardErrorPath</key><string>${join(LOG_DIR, 'monkguard.log')}</string>
 </dict>
 </plist>
 `);

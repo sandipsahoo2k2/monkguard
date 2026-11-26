@@ -26,7 +26,7 @@ export function buildView(store: FileStore, engine: Engine): Record<string, unkn
       bindAddress: config.bindAddress,
     },
     // Which Mac this page controls, and only this one: every Mac runs its own
-    // FocusGuard with its own settings. The address comes first, because that is
+    // MonkGuard with its own settings. The address comes first, because that is
     // what tells two machines apart before anybody has named them; the name is
     // whatever the admin typed, never what macOS decided to call the machine.
     device: {

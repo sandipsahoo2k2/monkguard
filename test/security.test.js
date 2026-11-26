@@ -39,7 +39,7 @@ test('a rebinding attempt is refused', () => {
   // its scripts can talk to the admin page from inside somebody's browser.
   const hosts = allowedHosts(8787, 'Family-MacBook');
   assert.equal(hostIsAllowed('evil.example.com:8787', hosts), false);
-  assert.equal(hostIsAllowed('focusguard.attacker.net', hosts), false);
+  assert.equal(hostIsAllowed('monk.attacker.net', hosts), false);
   assert.equal(hostIsAllowed(undefined, hosts), false);
 });
 

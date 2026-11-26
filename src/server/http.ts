@@ -76,7 +76,7 @@ export class AdminServer {
     // Only this Mac and the devices sharing its network, not every private
     // address that might reach it over a VPN or a guest network.
     if (!isOnOurNetwork(client)) {
-      return this.refuse(response, 'FocusGuard only answers devices on the same wifi network.');
+      return this.refuse(response, 'MonkGuard only answers devices on the same wifi network.');
     }
 
     // And on a strange network, not even those: a laptop in a cafe shares its
@@ -118,7 +118,7 @@ export class AdminServer {
     if (key === 'GET /api/challenge') return this.challenge(response);
     if (key === 'POST /api/login') return this.login(request, response, client);
     if (key === 'POST /api/logout') {
-      this.tokens.delete(this.cookies(request).gr_token ?? '');
+      this.tokens.delete(this.cookies(request).monkguard_token ?? '');
       return this.sendJson(response, 200, { ok: true });
     }
 
@@ -189,14 +189,14 @@ export class AdminServer {
     this.tokens.set(token, { expires: Date.now() + TOKEN_LIFETIME_MS, client });
     this.attempts.delete(client);
     response.setHeader('set-cookie',
-      `gr_token=${token}; Path=/; Max-Age=${TOKEN_LIFETIME_MS / 1000}; SameSite=Lax; HttpOnly`);
+      `monkguard_token=${token}; Path=/; Max-Age=${TOKEN_LIFETIME_MS / 1000}; SameSite=Lax; HttpOnly`);
     return this.sendJson(response, 200, { ok: true });
   }
 
   /** A session belongs to the device it was issued to: a copied cookie is of no
    *  use from another phone on the same wifi. */
   private authorised(request: IncomingMessage, client: string): boolean {
-    const token = this.cookies(request).gr_token;
+    const token = this.cookies(request).monkguard_token;
     if (!token) return false;
     const session = this.tokens.get(token);
     if (!session) return false;

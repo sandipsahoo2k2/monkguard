@@ -15,21 +15,21 @@ export interface AccessDecision {
  */
 export function mayReachFromNetwork(config: Config, networkId: string): AccessDecision {
   if (config.lanAccess === 'never') {
-    return { allowed: false, reason: 'FocusGuard is set to answer only on this Mac.' };
+    return { allowed: false, reason: 'MonkGuard is set to answer only on this Mac.' };
   }
   if (config.lanAccess === 'always') return { allowed: true, reason: '' };
 
   if (!config.homeNetwork) {
     return {
       allowed: false,
-      reason: 'No home network has been chosen yet. Open FocusGuard on the Mac itself and trust this network.',
+      reason: 'No home network has been chosen yet. Open MonkGuard on the Mac itself and trust this network.',
     };
   }
   if (!networkId) {
-    return { allowed: false, reason: 'This network cannot be recognised, so FocusGuard is answering only on the Mac.' };
+    return { allowed: false, reason: 'This network cannot be recognised, so MonkGuard is answering only on the Mac.' };
   }
   if (networkId !== config.homeNetwork) {
-    return { allowed: false, reason: 'This is not the home network, so FocusGuard is answering only on the Mac.' };
+    return { allowed: false, reason: 'This is not the home network, so MonkGuard is answering only on the Mac.' };
   }
   return { allowed: true, reason: '' };
 }

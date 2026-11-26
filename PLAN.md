@@ -1,4 +1,4 @@
-# FocusGuard — family focus guard for macOS
+# MonkGuard — calm focus for your Mac
 
 One Mac, one family. No cloud, no accounts, no user base to manage. A single
 background agent on the kid's Mac plus a phone-friendly admin page served on the
@@ -9,7 +9,7 @@ home wifi.
 ```
 ┌─────────────────────────── kid's Mac ───────────────────────────┐
 │  LaunchAgent (RunAtLoad + KeepAlive)                            │
-│    focusguard background service (Node, zero dependencies)      │
+│    monk background service (Node, zero dependencies)      │
 │      ├── Scheduler      → is policy active right now?           │
 │      ├── Sensors        → what is on screen / running           │
 │      ├── Classifier     → game? shorts? educational video?      │
@@ -156,7 +156,7 @@ Never a surprise kill. Every step is logged and visible to the parent.
 - Admin page needs a PIN (PBKDF2-SHA256, salted); config is only writable through
   the API; out-of-band edits to `config.json` are detected by checksum and logged.
 - The service runs from its own ad-hoc signed app bundle, so the Automation
-  permission belongs to FocusGuard rather than to whatever copy of `node` is on
+  permission belongs to MonkGuard rather than to whatever copy of `node` is on
   the machine, and survives a node upgrade.
 
 ## 6. Admin page

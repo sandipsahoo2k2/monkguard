@@ -10,7 +10,7 @@ import {
   Config, Event, State, defaultConfig, defaultState, emptyDay,
 } from '../domain/types.js';
 
-export const APP_DIR = join(homedir(), 'Library', 'Application Support', 'FocusGuard');
+export const APP_DIR = join(homedir(), 'Library', 'Application Support', 'MonkGuard');
 const CONFIG_PATH = join(APP_DIR, 'config.json');
 const STATE_PATH = join(APP_DIR, 'state.json');
 
@@ -164,7 +164,7 @@ export class FileStore implements ConfigStore, Housekeeping {
     const event: Event = {
       at: new Date(now).toISOString(),
       kind: 'service_downtime',
-      subject: 'focusguard',
+      subject: 'monkguard',
       detail: `the service was not running for about ${minutes} min`,
     };
     this.stateView.update((state) => {

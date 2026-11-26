@@ -69,7 +69,7 @@ export function policyStatus(config: Config, now = new Date()): PolicyStatus {
   const done = (state: 'focus' | 'free', reason: string, until: Date | null): PolicyStatus =>
     ({ state, reason, until, enforcing: state === 'focus' });
 
-  if (!config.enabled) return done('free', 'FocusGuard is switched off', null);
+  if (!config.enabled) return done('free', 'MonkGuard is switched off', null);
 
   if (config.tempUnlockUntil) {
     const until = new Date(config.tempUnlockUntil);

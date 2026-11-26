@@ -72,7 +72,7 @@ export class ActionExecutor {
     const now = this.clock.now().getTime();
     if (now - last < everyMs) return;
     this.lastNotice.set(key, now);
-    await this.notifier.notify('FocusGuard', body);
+    await this.notifier.notify('MonkGuard', body);
   }
 
   private strike(key: string): number {
@@ -113,7 +113,7 @@ export class ActionExecutor {
 
     if (warnedAt === undefined) {
       this.warnedApps.set(app.bundleId, now);
-      await this.notifier.notify('FocusGuard',
+      await this.notifier.notify('MonkGuard',
         `${app.name} will close in ${graceSeconds} seconds — save your work now.`);
       this.state.appendEvent({ kind: 'app_warning', subject: app.name, detail: why });
       return;

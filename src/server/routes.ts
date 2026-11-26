@@ -106,7 +106,7 @@ export function buildRoutes(store: FileStore, engine: Engine): Record<string, Ro
       store.update((config) => { config.enabled = enabled; });
       store.appendEvent({
         kind: enabled ? 'enabled' : 'disabled',
-        subject: 'focusguard',
+        subject: 'monkguard',
         detail: 'set from the admin page',
       });
       return view();

@@ -5,7 +5,7 @@ import { run } from './exec.js';
 export interface DeviceIdentity {
   /** What this Mac is called in Settings, e.g. "Anya's MacBook Air". */
   name: string;
-  /** The macOS account FocusGuard is watching. */
+  /** The macOS account MonkGuard is watching. */
   account: string;
   model: string;
   addresses: string[];
@@ -19,7 +19,7 @@ let cached: DeviceIdentity = {
 /**
  * Which Mac this is.
  *
- * Every Mac runs its own FocusGuard with its own settings, so an admin page
+ * Every Mac runs its own MonkGuard with its own settings, so an admin page
  * only ever controls the machine serving it. Saying plainly which machine that
  * is matters once a house has more than one.
  */

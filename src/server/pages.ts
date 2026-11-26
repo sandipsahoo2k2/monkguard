@@ -14,7 +14,7 @@ function page(name: string): string {
     cache.set(name, html);
     return html;
   } catch {
-    return `<!doctype html><meta charset="utf-8"><p>Missing ${name}. Reinstall FocusGuard.</p>`;
+    return `<!doctype html><meta charset="utf-8"><p>Missing ${name}. Reinstall MonkGuard.</p>`;
   }
 }
 
@@ -32,7 +32,7 @@ const HEADLINES: Record<string, string> = {
   break: 'Time for a short break',
 };
 
-/** The page a blocked tab lands on. It is the only part of FocusGuard most
+/** The page a blocked tab lands on. It is the only part of MonkGuard most
  *  people ever see, so it says what happened and when it comes back, names no
  *  authority figure, and never scolds. */
 export function blockedPage(reason: string, detail: string, until: string, note = ''): string {

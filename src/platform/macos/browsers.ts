@@ -3,10 +3,10 @@ import { TabController, TabLister } from '../../domain/ports.js';
 import { TabObservation } from '../../domain/types.js';
 import { osascript, run } from './exec.js';
 
-/** FOCUSGUARD_DEBUG=1 explains every decision this layer makes, which is the
+/** MONKGUARD_DEBUG=1 explains every decision this layer makes, which is the
  *  difference between "it does not work" and a fixable sentence. */
 const debug = (message: string): void => {
-  if (process.env.FOCUSGUARD_DEBUG) {
+  if (process.env.MONKGUARD_DEBUG) {
     process.stdout.write(`${new Date().toISOString().slice(11, 19)} [browsers] ${message}\n`);
   }
 };
@@ -23,7 +23,7 @@ const FIELD = '<|>';
 
 /**
  * The very first request to a browser is the one that makes macOS show the
- * "allow FocusGuard to control Safari?" dialog, and it does not return until
+ * "allow MonkGuard to control Safari?" dialog, and it does not return until
  * somebody answers it. A normal eight second timeout would kill the request
  * while the parent is still reaching for the mouse, taking the dialog with it,
  * so the first call to each browser waits a minute and the rest are brisk.

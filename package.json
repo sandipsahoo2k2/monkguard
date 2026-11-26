@@ -1,10 +1,10 @@
 {
-  "name": "focusguard",
+  "name": "monkguard",
   "version": "0.1.0",
-  "description": "Family focus guard for macOS. Stops reels, shorts and games during focus hours, throttles long video sessions, and is controlled from a phone browser on your home wifi. No cloud, no accounts, no dependencies.",
+  "description": "MonkGuard: calm focus for your Mac. Stops reels, shorts and games during focus hours, limits long video sessions, and is controlled from your phone on the home wifi. No cloud, no accounts, no dependencies.",
   "type": "module",
   "bin": {
-    "focusguard": "dist/index.js"
+    "monk": "dist/index.js"
   },
   "main": "dist/index.js",
   "files": [
@@ -31,10 +31,11 @@
     "clean": "rm -rf dist"
   },
   "keywords": [
+    "monkguard",
+    "focus",
     "parental-controls",
     "macos",
     "screen-time",
-    "focus",
     "youtube-shorts",
     "reels",
     "kids",

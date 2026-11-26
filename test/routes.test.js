@@ -7,7 +7,7 @@ import { FileStore } from '../dist/infra/store.js';
 import { buildRoutes } from '../dist/server/routes.js';
 
 function withRoutes(run) {
-  const directory = mkdtempSync(join(tmpdir(), 'focusguard-'));
+  const directory = mkdtempSync(join(tmpdir(), 'monk-'));
   try {
     const store = new FileStore(directory);
     run(store, buildRoutes(store, { live: [] }));

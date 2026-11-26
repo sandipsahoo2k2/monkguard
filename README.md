@@ -1,4 +1,4 @@
-# FocusGuard
+# MonkGuard
 
 Switches off reels, shorts and games on a Mac during the hours you choose, and
 you control it from your phone.
@@ -17,24 +17,20 @@ Three steps, a few minutes, on the Mac you want to guard. You need
 **1. Install it.** Open the Terminal app and paste this:
 
 ```bash
-git clone https://github.com/sandipsahoo2k2/focusguard.git
-cd focusguard
-npm install && npm run build && npm install -g .
-focusguard install
+npm install -g monkguard
+monk install
 ```
-
-Keep the `focusguard` folder: the app runs from it.
 
 It prints a PIN. Write it down — it is the only one you get, and it is not
 stored anywhere you can read later.
 
-**2. Say yes to one macOS question.** The first time FocusGuard looks at a
+**2. Say yes to one macOS question.** The first time MonkGuard looks at a
 browser tab, macOS asks whether it may control Safari or Chrome. Click **OK**.
 It needs this to see whether the page on screen is a Shorts feed or a maths
 lesson.
 
 Missed it? Open **System Settings → Privacy & Security → Automation** and switch
-your browsers on under FocusGuard.
+your browsers on under MonkGuard.
 
 **3. Open it on your phone.** The install prints an address like
 `http://10.0.0.42:8787`. Type it into your phone's browser, on the same wifi,
@@ -106,7 +102,7 @@ page. Each page shows the address of the Mac it controls, and you can name them
 other.
 
 **Can my child just quit it?**
-It restarts within seconds. More usefully, you see the gap: *"FocusGuard was not
+It restarts within seconds. More usefully, you see the gap: *"MonkGuard was not
 running for 6 minutes at 7:12 PM"*. If they know the Mac's admin password they
 can remove anything, so the real answer is to give them a standard macOS
 account, not an administrator one.
@@ -122,15 +118,15 @@ design: a family tool should not need a company's servers to tell a laptop to
 pause YouTube.
 
 **What if I take the Mac to a café?**
-Then only the Mac itself can open the page. FocusGuard answers other devices
+Then only the Mac itself can open the page. MonkGuard answers other devices
 only on the network you told it is home, so a laptop on a public network cannot
 be poked at by strangers. You do not have to remember to switch anything off.
 
 **I forgot the PIN.**
-On the Mac itself: `focusguard set-pin 4821`.
+On the Mac itself: `monk set-pin 4821`.
 
 **How do I remove it?**
-`focusguard uninstall`, or `focusguard uninstall --purge` to delete its settings
+`monk uninstall`, or `monk uninstall --purge` to delete its settings
 and history too. Nothing is left behind.
 
 ---
@@ -180,7 +176,7 @@ Created and owned by [Sandeep Sahoo](https://github.com/sandipsahoo2k2).
 | Use it, at home or anywhere, free | Sell it, changed or unchanged |
 | Read, copy and change the code | Charge for a product, hosting or support whose value mainly comes from it |
 | Share it, or your changes, for free | Remove the owner's notices or pass it off as your own |
-| Contribute back ([how](CONTRIBUTING.md)) | Use the FocusGuard name for your own version |
+| Contribute back ([how](CONTRIBUTING.md)) | Use the MonkGuard name for your own version |
 
 This table is a summary. The [LICENSE](LICENSE) file is what counts: Apache 2.0
 with the Commons Clause. Because it forbids selling, this is "source-available"

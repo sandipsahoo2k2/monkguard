@@ -55,7 +55,7 @@ switch (command) {
     if (firstPin) log(`a PIN was created for the admin page: ${firstPin} — change it under More`);
     new AdminServer(system.store, system.engine).listen(port);
     system.engine.start();
-    system.store.appendEvent({ kind: 'started', subject: 'focusguard', detail: `watching, admin page on port ${port}` });
+    system.store.appendEvent({ kind: 'started', subject: 'monkguard', detail: `watching, admin page on port ${port}` });
     break;
   }
 
@@ -87,8 +87,8 @@ switch (command) {
       signIdentity: value('sign'),
     });
     console.log(running
-      ? '\nFocusGuard is running, and starts again every time this Mac logs in.'
-      : `\nInstalled, but it is not running. Check ${paths.LOG_DIR}/focusguard.log`);
+      ? '\nMonk is running, and starts again every time this Mac logs in.'
+      : `\nInstalled, but it is not running. Check ${paths.LOG_DIR}/monkguard.log`);
     await printAddresses(system.store.get().serverPort);
     if (generated && !pin) {
       console.log(`\n  The PIN for the admin page is  ${generated}`);
@@ -97,11 +97,11 @@ switch (command) {
     console.log(`
   One more step, once only:
 
-    The first time FocusGuard reads a browser tab, macOS asks whether it may
+    The first time MonkGuard reads a browser tab, macOS asks whether it may
     control Safari or Chrome. Say OK. If you miss it, open System Settings >
-    Privacy & Security > Automation and switch the browsers on under FocusGuard.
+    Privacy & Security > Automation and switch the browsers on under MonkGuard.
 
-    Check it worked with:  focusguard probe
+    Check it worked with:  monk probe
 `);
     break;
   }
@@ -109,15 +109,15 @@ switch (command) {
   case 'uninstall': {
     await uninstall(flag('purge'));
     console.log(flag('purge')
-      ? 'FocusGuard removed, along with its settings and history.'
-      : `FocusGuard removed. Settings kept in ${paths.APP_DIR} (delete with --purge).`);
+      ? 'MonkGuard removed, along with its settings and history.'
+      : `MonkGuard removed. Settings kept in ${paths.APP_DIR} (delete with --purge).`);
     break;
   }
 
   case 'set-pin': {
     const pin = args[0];
     if (!pin || pin.length < 4) {
-      console.error('usage: focusguard set-pin <at least 4 characters>');
+      console.error('usage: monk set-pin <at least 4 characters>');
       process.exit(1);
     }
     buildSystem().store.setPin(pin);
@@ -174,19 +174,19 @@ switch (command) {
   }
 
   default:
-    console.log(`focusguard — family focus guard for macOS
+    console.log(`MonkGuard — calm focus for your Mac
 
-  focusguard install          install and start it, and start it at every login
+  monk install                install and start it, and start it at every login
       --pin <pin>             set the admin PIN now, instead of being given one
       --this-mac-only         do not answer other devices on the wifi
       --port <port>           admin page port (default 8787)
       --no-app-bundle         run node directly instead of the signed wrapper
       --sign <identity>       codesign with a Developer ID instead of ad-hoc
-  focusguard run              run in the foreground (what the login service calls)
-  focusguard probe            one detection pass, printed
-  focusguard status           the current state as JSON
-  focusguard set-pin <pin>    change the admin PIN
-  focusguard uninstall        stop it and remove it (--purge also deletes settings)
+  monk run                    run in the foreground (what the login service calls)
+  monk probe                  one detection pass, printed
+  monk status                 the current state as JSON
+  monk set-pin <pin>          change the admin PIN
+  monk uninstall              stop it and remove it (--purge also deletes settings)
 `);
     if (command !== 'help' && command !== '--help' && command !== '-h') process.exit(1);
 }

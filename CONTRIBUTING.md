@@ -1,4 +1,4 @@
-# Contributing to FocusGuard
+# Contributing to MonkGuard
 
 Contributions are welcome. The most useful one is usually a better list in
 `src/domain/patterns.ts`: a new shorts feed, game site, learning site or song
@@ -12,7 +12,7 @@ marker.
 
 ## Ownership and terms
 
-FocusGuard is owned by [Sandeep Sahoo](https://github.com/sandipsahoo2k2), who
+MonkGuard is owned by [Sandeep Sahoo](https://github.com/sandipsahoo2k2), who
 decides what is merged. By submitting a contribution you agree that:
 
 - you wrote it yourself, or you have the right to submit it on these terms;
