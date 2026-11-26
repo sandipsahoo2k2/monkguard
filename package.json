@@ -1,0 +1,55 @@
+{
+  "name": "focusguard",
+  "version": "0.1.0",
+  "description": "Family focus guard for macOS. Stops reels, shorts and games during focus hours, throttles long video sessions, and is controlled from a phone browser on your home wifi. No cloud, no accounts, no dependencies.",
+  "type": "module",
+  "bin": {
+    "focusguard": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "web",
+    "README.md",
+    "PLAN.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=18.17"
+  },
+  "os": [
+    "darwin"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js run",
+    "prepublishOnly": "npm run build",
+    "test": "npm run build && node --test \"test/*.test.js\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "parental-controls",
+    "macos",
+    "screen-time",
+    "focus",
+    "youtube-shorts",
+    "reels",
+    "kids",
+    "family",
+    "launchd",
+    "no-dependencies"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@types/node": "^22.7.5"
+  },
+  "author": "sandipsahoo2k2 (https://github.com/sandipsahoo2k2)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandipsahoo2k2/focusguard.git"
+  },
+  "homepage": "https://github.com/sandipsahoo2k2/focusguard#readme"
+}
