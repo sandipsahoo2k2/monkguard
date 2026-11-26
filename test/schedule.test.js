@@ -55,10 +55,6 @@ test('extra free time expires by itself', () => {
   assert.equal(policyStatus(config, after).state, 'focus');
 });
 
-test('switching the whole guard off stops everything', () => {
-  assert.equal(policyStatus(configWith({ enabled: false }), MONDAY_8PM).enforcing, false);
-});
-
 test('rubbish times are rejected rather than guessed at', () => {
   assert.equal(minutesOfDay('25:00'), null);
   assert.equal(minutesOfDay('nonsense'), null);

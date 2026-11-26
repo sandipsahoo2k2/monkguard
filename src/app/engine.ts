@@ -32,7 +32,6 @@ export interface EngineDeps {
  * is a reel and when a break is due all happen elsewhere.
  */
 export class Engine {
-  private timer: NodeJS.Timeout | null = null;
   private ticking = false;
   private lastVideoAt = 0;
   private lastConfigCheck = 0;
@@ -42,22 +41,12 @@ export class Engine {
   constructor(private readonly deps: EngineDeps) {}
 
   start(): void {
-    this.timer = setInterval(() => void this.safeTick(), TICK_SECONDS * 1000);
+    setInterval(() => void this.safeTick(), TICK_SECONDS * 1000);
     void this.safeTick();
-  }
-
-  stop(): void {
-    if (this.timer) clearInterval(this.timer);
-    this.timer = null;
   }
 
   get live(): string[] {
     return this.liveLines;
-  }
-
-  /** One step of the loop, for tests and the demo. */
-  async tickOnce(): Promise<void> {
-    await this.safeTick();
   }
 
   private async safeTick(): Promise<void> {
@@ -225,7 +214,6 @@ export class Engine {
     this.deps.state.update((state) => {
       const seconds = state.today.appSeconds[front.app.bundleId] ?? 0;
       state.today.appSeconds[front.app.bundleId] = seconds + TICK_SECONDS;
-      if (front.judgement.verdict === 'game') state.today.gamesSeconds += TICK_SECONDS;
     });
   }
 

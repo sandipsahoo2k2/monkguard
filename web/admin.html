@@ -40,7 +40,6 @@
   #actions { flex-wrap: wrap; }
   #actions button { flex: 1 1 30%; }
   .live { margin-top: 14px; }
-  .countdown { font-variant-numeric: tabular-nums; }
   button {
     font: inherit; color: var(--text); background: #222a34; border: 1px solid var(--line);
     border-radius: 12px; padding: 13px 10px; cursor: pointer; min-height: 46px;
@@ -104,6 +103,8 @@
     .bar { background: #e6eaf1; }
     button.on { color: #fff; }
     .pending { background: #fff6e2; border-color: #f0dcae; }
+    button.good { background: #d8f1e5; border-color: #a5d8c0; }
+    button.bad { background: #fbe0e0; border-color: #efb7b7; }
     .notice { background: #fff4e0; border-color: #f0dcae; color: #6a4a06; }
   }
 </style>
@@ -452,8 +453,7 @@ function render() {
 
   const until = fmtUntil(d.until);
   let why;
-  if (!d.enabled) why = 'MonkGuard is switched off';
-  else if (focus) why = 'Reels, games and long videos are stopped' + (until ? ' until ' + until : '');
+  if (focus) why = 'Reels, games and long videos are stopped' + (until ? ' until ' + until : '');
   else if (temporary) why = 'Nothing is blocked' + (until ? ' until ' + until : '');
   else if (d.mode === 'free') why = 'Nothing is being blocked, until you change it back';
   else why = (d.reason || 'Free time') + (until ? ' until ' + until : '');
@@ -517,9 +517,11 @@ function render() {
     '<div class="pending"><b>' + esc(p.name) + '</b> looks like a game' +
     (p.minutes ? ' · ' + p.minutes + ' min today' : '') +
     '<div class="why">' + esc((p.reasons || []).join(', ')) + '</div>' +
-    '<div class="row"><button class="bad" style="flex:1" onclick="verdict(\'' + esc(p.bundleID) + '\',true)">It is a game</button>' +
-    '<button class="good" style="flex:1" onclick="verdict(\'' + esc(p.bundleID) + '\',false)">Not a game</button></div></div>'
+    '<div class="row" data-app="' + esc(p.bundleId) + '"><button class="bad" style="flex:1" data-game="yes">It is a game</button>' +
+    '<button class="good" style="flex:1" data-game="no">Not a game</button></div></div>'
   ).join('');
+  document.querySelectorAll('#pendingWrap button').forEach(b => b.onclick = () =>
+    verdict(b.parentElement.dataset.app, b.dataset.game === 'yes'));
 
   if (!limitsFilled || !document.getElementById('rulesBox').open) {
     for (const key of ['blockShorts','blockGames','blockBrowserGames','blockUnreadableBrowsers']) {
@@ -676,8 +678,8 @@ document.getElementById('trustNetwork').onclick = async () => {
 };
 document.getElementById('logout').onclick = async () => { await api('/api/logout', {}); showLogin('Logged out'); };
 
-async function verdict(bundleID, isGame) {
-  data = await api('/api/verdict', { bundleID, isGame });
+async function verdict(bundleId, isGame) {
+  data = await api('/api/verdict', { bundleId, isGame });
   render(); toast(isGame ? 'Marked as a game' : 'Allowed');
 }
 

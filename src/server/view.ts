@@ -19,7 +19,6 @@ export function buildView(store: FileStore, engine: Engine): Record<string, unkn
 
   return {
     network: {
-      gateway: network.gateway,
       onHomeNetwork: Boolean(config.homeNetwork) && network.id === config.homeNetwork,
       homeNetworkChosen: Boolean(config.homeNetwork),
       lanAccess: config.lanAccess,
@@ -36,33 +35,22 @@ export function buildView(store: FileStore, engine: Engine): Record<string, unkn
       account: device.account,
       /** Offered as a suggestion when naming it, nothing more. */
       systemName: device.name,
-      model: device.model,
       hostName: device.hostName,
     },
     displayName: config.displayName,
     blockPageNote: config.blockPageNote,
-    enabled: config.enabled,
     mode: config.mode,
-    defaultState: config.defaultState,
     state: status.state,
     reason: status.reason,
     until: status.until?.toISOString() ?? '',
     tempUnlockUntil: config.tempUnlockUntil ?? '',
     breakUntil: state.breakUntil ?? '',
-    streakMinutes: state.watchStreakStart
-      ? Math.floor((Date.now() - Date.parse(state.watchStreakStart)) / 60_000)
-      : 0,
     today: {
       entertainmentMin: toMinutes(state.today.entertainmentSeconds),
       educationalMin: toMinutes(state.today.educationalSeconds),
       musicMin: toMinutes(state.today.musicSeconds),
-      gamesMin: toMinutes(state.today.gamesSeconds),
       shortsBlocked: state.today.shortsBlocked,
       gamesBlocked: state.today.gamesBlocked,
-      topApps: Object.entries(state.today.appSeconds)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 6)
-        .map(([bundleId, seconds]) => ({ bundleId, minutes: toMinutes(seconds) })),
     },
     rules: { ...config.rules, llmApiKey: undefined, hasLLMKey: Boolean(config.rules.llmApiKey) },
     windows: config.windows,
@@ -76,14 +64,5 @@ export function buildView(store: FileStore, engine: Engine): Record<string, unkn
     events: state.events.slice(0, 40),
     downtime: state.downtime.slice(0, 5),
     permissionProblems: permissions.current(),
-    history: state.history.slice(0, 7).map((day) => ({
-      day: day.day,
-      entertainmentMin: toMinutes(day.entertainmentSeconds),
-      educationalMin: toMinutes(day.educationalSeconds),
-      musicMin: toMinutes(day.musicSeconds ?? 0),
-      gamesMin: toMinutes(day.gamesSeconds),
-      shortsBlocked: day.shortsBlocked,
-      gamesBlocked: day.gamesBlocked,
-    })),
   };
 }

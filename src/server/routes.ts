@@ -64,9 +64,6 @@ function applyRules(body: Record<string, unknown>, config: Config): void {
       .map((item) => item.trim().toLowerCase())
       .filter(Boolean);
   }
-  if (Array.isArray(body.allowedApps)) {
-    rules.allowedApps = (body.allowedApps as unknown[]).filter((item): item is string => typeof item === 'string');
-  }
   if (body.musicMode === 'audio' || body.musicMode === 'all' || body.musicMode === 'off') {
     rules.musicMode = body.musicMode;
   }
@@ -77,7 +74,6 @@ function applyRules(body: Record<string, unknown>, config: Config): void {
     config.displayName = body.displayName.trim().slice(0, 40);
   }
   if (typeof body.blockPageNote === 'string') config.blockPageNote = body.blockPageNote.trim().slice(0, 120);
-  if (body.defaultState === 'focus' || body.defaultState === 'free') config.defaultState = body.defaultState;
 }
 
 /**
@@ -98,17 +94,6 @@ export function buildRoutes(store: FileStore, engine: Engine): Record<string, Ro
         if (mode !== 'free') config.tempUnlockUntil = null;
       });
       store.appendEvent({ kind: 'mode_changed', subject: mode, detail: 'set from the admin page' });
-      return view();
-    },
-
-    'POST /api/enabled': (body) => {
-      const enabled = body.enabled !== false;
-      store.update((config) => { config.enabled = enabled; });
-      store.appendEvent({
-        kind: enabled ? 'enabled' : 'disabled',
-        subject: 'monkguard',
-        detail: 'set from the admin page',
-      });
       return view();
     },
 
@@ -149,43 +134,17 @@ export function buildRoutes(store: FileStore, engine: Engine): Record<string, Ro
     },
 
     'POST /api/verdict': (body) => {
+      const bundleId = typeof body.bundleId === 'string' ? body.bundleId : '';
+      if (!bundleId) return { status: 400, body: { error: 'bundleId required' } };
       const isGame = body.isGame === true;
-      if (typeof body.bundleId === 'string' && body.bundleId) {
-        const bundleId = body.bundleId;
-        store.update((config) => { config.learned.appVerdicts[bundleId] = isGame; });
-        store.stateView.update((state) => {
-          state.pending = state.pending.filter((question) => question.bundleId !== bundleId);
-        });
-        store.appendEvent({
-          kind: 'verdict',
-          subject: bundleId,
-          detail: isGame ? 'marked as a game' : 'marked as not a game',
-        });
-        return view();
-      }
-      if (typeof body.host === 'string' && body.host) {
-        const host = body.host.toLowerCase();
-        store.update((config) => { config.learned.domainVerdicts[host] = isGame; });
-        store.appendEvent({
-          kind: 'verdict',
-          subject: host,
-          detail: isGame ? 'marked as a game site' : 'marked as allowed',
-        });
-        return view();
-      }
-      return { status: 400, body: { error: 'bundleId or host required' } };
-    },
-
-    'POST /api/channel': (body) => {
-      const name = String(body.name ?? '').trim();
-      if (!name) return { status: 400, body: { error: 'name required' } };
-      const action = String(body.action ?? 'allow');
-      store.update((config) => {
-        const matches = (candidate: string) => candidate.toLowerCase() === name.toLowerCase();
-        config.rules.channelAllow = config.rules.channelAllow.filter((item) => !matches(item));
-        config.rules.channelBlock = config.rules.channelBlock.filter((item) => !matches(item));
-        if (action === 'allow') config.rules.channelAllow.push(name);
-        if (action === 'block') config.rules.channelBlock.push(name);
+      store.update((config) => { config.learned.appVerdicts[bundleId] = isGame; });
+      store.stateView.update((state) => {
+        state.pending = state.pending.filter((question) => question.bundleId !== bundleId);
+      });
+      store.appendEvent({
+        kind: 'verdict',
+        subject: bundleId,
+        detail: isGame ? 'marked as a game' : 'marked as not a game',
       });
       return view();
     },

@@ -1,6 +1,6 @@
 {
   "name": "monkguard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MonkGuard: calm focus for your Mac. Stops reels, shorts and games during focus hours, limits long video sessions, and is controlled from your phone on the home wifi. No cloud, no accounts, no dependencies.",
   "type": "module",
   "bin": {
@@ -11,7 +11,6 @@
     "dist",
     "web",
     "README.md",
-    "PLAN.md",
     "LICENSE",
     "NOTICE"
   ],
@@ -51,7 +50,7 @@
   "author": "Sandeep Sahoo (https://github.com/sandipsahoo2k2)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sandipsahoo2k2/focusguard.git"
+    "url": "git+https://github.com/sandipsahoo2k2/monkguard.git"
   },
-  "homepage": "https://github.com/sandipsahoo2k2/focusguard#readme"
+  "homepage": "https://github.com/sandipsahoo2k2/monkguard#readme"
 }

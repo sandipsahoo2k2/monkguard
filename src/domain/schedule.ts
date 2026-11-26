@@ -69,8 +69,6 @@ export function policyStatus(config: Config, now = new Date()): PolicyStatus {
   const done = (state: 'focus' | 'free', reason: string, until: Date | null): PolicyStatus =>
     ({ state, reason, until, enforcing: state === 'focus' });
 
-  if (!config.enabled) return done('free', 'MonkGuard is switched off', null);
-
   if (config.tempUnlockUntil) {
     const until = new Date(config.tempUnlockUntil);
     if (until > now) return done('free', 'Blocking is paused', until);
@@ -79,15 +77,6 @@ export function policyStatus(config: Config, now = new Date()): PolicyStatus {
   if (config.mode === 'lockdown') return done('focus', 'Locked down, set in the admin page', null);
 
   const match = config.windows.find((window) => windowContains(window, now));
-  // A window flips the default state. With the recommended `focus` default these
-  // are the free windows and everything outside them is focus time.
-  const flipped: 'focus' | 'free' = config.defaultState === 'focus' ? 'free' : 'focus';
-  if (match) {
-    return done(flipped,
-      flipped === 'free' ? `Free time: ${match.label}` : `Focus time: ${match.label}`,
-      endOf(match, now));
-  }
-  return done(config.defaultState,
-    config.defaultState === 'focus' ? 'Focus time' : 'Free time',
-    nextWindowStart(config, now));
+  if (match) return done('free', `Free time: ${match.label}`, endOf(match, now));
+  return done('focus', 'Focus time', nextWindowStart(config, now));
 }

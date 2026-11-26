@@ -36,6 +36,7 @@ export class ActionExecutor {
 
   async run(actions: Action[]): Promise<void> {
     this.handledTabs = new Set();
+    this.dropWarningsForClosedApps(actions);
     for (const action of actions) await this.apply(action);
   }
 
@@ -43,6 +44,15 @@ export class ActionExecutor {
   reset(): void {
     this.warnedApps.clear();
     this.strikes.clear();
+  }
+
+  /** An app nobody asks to stop any more has been closed. Forget its warning,
+   *  so opening it again starts with a fresh countdown. */
+  private dropWarningsForClosedApps(actions: Action[]): void {
+    const open = new Set(actions.flatMap((a) => (a.type === 'stopApp' ? [a.app.bundleId] : [])));
+    for (const bundleId of this.warnedApps.keys()) {
+      if (!open.has(bundleId)) this.warnedApps.delete(bundleId);
+    }
   }
 
   private async apply(action: Action): Promise<void> {
@@ -134,9 +144,5 @@ export class ActionExecutor {
       this.apps.forceQuit(app);
       this.state.appendEvent({ kind: 'app_force_quit', subject: app.name, detail: 'it did not quit when asked' });
     }, graceSeconds * 1000).unref?.();
-  }
-
-  forget(bundleId: string): void {
-    this.warnedApps.delete(bundleId);
   }
 }

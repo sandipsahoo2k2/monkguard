@@ -29,7 +29,7 @@ test('a homework app is never a game, however busy it looks', () => {
 });
 
 test("the parent's answer beats every other signal", () => {
-  const config = configWith({ learned: { appVerdicts: { 'com.valvesoftware.steam': false }, domainVerdicts: {}, videoVerdicts: {} } });
+  const config = configWith({ learned: { appVerdicts: { 'com.valvesoftware.steam': false }, videoVerdicts: {} } });
   const steam = app({ bundleId: 'com.valvesoftware.steam', name: 'Steam' });
   assert.equal(judgeGame(steam, config, fakeProbes()).verdict, 'notGame');
 });

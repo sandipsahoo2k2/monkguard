@@ -1,12 +1,9 @@
 /** Everything the owner of this Mac can change. Written to config.json. */
 export interface Config {
   version: number;
-  enabled: boolean;
   /** `auto` follows the schedule; `free` and `lockdown` override it until changed. */
   mode: 'auto' | 'free' | 'lockdown';
-  /** What applies when no window matches. `focus` = restricted by default. */
-  defaultState: 'focus' | 'free';
-  /** Windows flip the default. With `defaultState: focus` these are the free windows. */
+  /** Free-time windows: inside one nothing is enforced. */
   windows: TimeWindow[];
   rules: Rules;
   learned: Learned;
@@ -63,7 +60,6 @@ export interface Rules {
   forcedBreakMin: number;
   /** Seconds of warning before a game is closed, so work can be saved. */
   gameGraceSeconds: number;
-  allowedApps: string[];
   blockedDomains: string[];
   channelAllow: string[];
   channelBlock: string[];
@@ -74,7 +70,6 @@ export interface Rules {
 /** Answers already given in the admin page, so nothing is ever asked twice. */
 export interface Learned {
   appVerdicts: Record<string, boolean>;
-  domainVerdicts: Record<string, boolean>;
   videoVerdicts: Record<string, 'edu' | 'fun' | 'music' | 'musicVideo'>;
 }
 
@@ -132,7 +127,6 @@ export interface DayUsage {
   entertainmentSeconds: number;
   educationalSeconds: number;
   musicSeconds: number;
-  gamesSeconds: number;
   shortsBlocked: number;
   gamesBlocked: number;
   appSeconds: Record<string, number>;
@@ -148,7 +142,6 @@ export interface PendingQuestion {
 
 export interface State {
   today: DayUsage;
-  history: DayUsage[];
   events: Event[];
   pending: PendingQuestion[];
   /** Start of the current uninterrupted watching streak. */
@@ -171,7 +164,6 @@ export function defaultRules(): Rules {
     continuousWatchLimitMin: 25,
     forcedBreakMin: 5,
     gameGraceSeconds: 60,
-    allowedApps: [],
     blockedDomains: [],
     channelAllow: ['Khan Academy', 'CrashCourse', 'Veritasium', '3Blue1Brown'],
     channelBlock: [],
@@ -182,15 +174,13 @@ export function defaultRules(): Rules {
 export function defaultConfig(): Config {
   return {
     version: 1,
-    enabled: true,
     mode: 'auto',
-    defaultState: 'focus',
     windows: [
       { id: 'after-school', label: 'After school', days: [2, 3, 4, 5, 6], start: '16:00', end: '17:30', enabled: true },
       { id: 'weekend', label: 'Weekend morning', days: [1, 7], start: '09:00', end: '11:00', enabled: true },
     ],
     rules: defaultRules(),
-    learned: { appVerdicts: {}, domainVerdicts: {}, videoVerdicts: {} },
+    learned: { appVerdicts: {}, videoVerdicts: {} },
     tempUnlockUntil: null,
     serverPort: 8787,
     bindAddress: '0.0.0.0',
@@ -207,7 +197,6 @@ export function defaultConfig(): Config {
 export function defaultState(): State {
   return {
     today: emptyDay(''),
-    history: [],
     events: [],
     pending: [],
     watchStreakStart: null,
@@ -223,7 +212,6 @@ export function emptyDay(day: string): DayUsage {
     entertainmentSeconds: 0,
     educationalSeconds: 0,
     musicSeconds: 0,
-    gamesSeconds: 0,
     shortsBlocked: 0,
     gamesBlocked: 0,
     appSeconds: {},

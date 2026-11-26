@@ -2,8 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ContentClassifier } from '../dist/domain/classifier.js';
 import { ScrollFeedTracker } from '../dist/domain/scrollFeed.js';
-import { FixedClock } from '../dist/infra/clock.js';
-import { configWith, tab, at } from './helpers.js';
+import { configWith, tab, at, FixedClock } from './helpers.js';
 
 function build(options = {}) {
   const clock = new FixedClock(options.now ?? at('2026-01-05T15:00:00'));

@@ -3,8 +3,7 @@ import assert from 'node:assert/strict';
 import { ContentClassifier } from '../dist/domain/classifier.js';
 import { ScrollFeedTracker } from '../dist/domain/scrollFeed.js';
 import { videoBudgetRule, continuousWatchRule } from '../dist/domain/rules/index.js';
-import { FixedClock } from '../dist/infra/clock.js';
-import { classified, configWith, snapshot, tab, at } from './helpers.js';
+import { classified, configWith, snapshot, tab, at, FixedClock } from './helpers.js';
 
 function build(meta) {
   const clock = new FixedClock(at('2026-01-05T15:00:00'));

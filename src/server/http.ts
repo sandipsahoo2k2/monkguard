@@ -5,7 +5,7 @@ import { Engine } from '../app/engine.js';
 import { mayReachFromNetwork } from '../domain/access.js';
 import { isHex } from '../infra/credentials.js';
 import { allowedHosts, hostIsAllowed, isLoopback, isOnOurNetwork } from '../infra/network.js';
-import { currentNetwork, lastKnownNetwork } from '../platform/macos/wifi.js';
+import { currentNetwork } from '../platform/macos/wifi.js';
 import { FileStore, log } from '../infra/store.js';
 import { adminPage, blockedPage } from './pages.js';
 import { buildRoutes } from './routes.js';

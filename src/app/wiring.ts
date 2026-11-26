@@ -1,5 +1,5 @@
 import { ContentClassifier, VerdictMemory } from '../domain/classifier.js';
-import { ConfigStore, ModelClassifier, StateStore } from '../domain/ports.js';
+import { ConfigStore, ModelClassifier, } from '../domain/ports.js';
 import { RULES } from '../domain/rules/index.js';
 import { ScrollFeedTracker } from '../domain/scrollFeed.js';
 import { ClaudeClassifier } from '../infra/claude.js';
@@ -41,10 +41,7 @@ function verdictMemory(config: ConfigStore): VerdictMemory {
 
 export interface System {
   store: FileStore;
-  state: StateStore;
   engine: Engine;
-  executor: ActionExecutor;
-  blockPageUrl: (reason: string, detail: string, until: Date | null) => string;
 }
 
 /**
@@ -86,5 +83,5 @@ export function buildSystem(options: { directory?: string } = {}): System {
     log,
   });
 
-  return { store, state, engine, executor, blockPageUrl };
+  return { store, engine };
 }

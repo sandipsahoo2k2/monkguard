@@ -55,11 +55,7 @@ export class ContentClassifier {
       return { ...base, kind: 'shorts', videoId: youtubeId(tab.url), why: 'a short-form video feed' };
     }
 
-    const learnedDomain = config.learned.domainVerdicts[host];
-    if (learnedDomain === true) {
-      return { ...base, kind: 'gameSite', videoId: null, why: 'marked as a game site in the admin page' };
-    }
-    if (learnedDomain === undefined && GAME_SITE_PATTERNS.some((pattern) => url.includes(pattern))) {
+    if (GAME_SITE_PATTERNS.some((pattern) => url.includes(pattern))) {
       return { ...base, kind: 'gameSite', videoId: null, why: 'a browser game site' };
     }
 

@@ -64,7 +64,7 @@ export interface ConfigStore {
 
 /** Periodic upkeep that belongs to storage, not to the loop. */
 export interface Housekeeping {
-  /** Rotates today's usage into history when the date changes. */
+  /** Starts a fresh day's usage when the date changes. */
   rollDay(): void;
   /** Records that the service is alive, and notices gaps where it was killed. */
   heartbeat(): void;

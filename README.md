@@ -85,8 +85,7 @@ During focus time, on that Mac:
   A music video is watching, so that is counted. You can change which.
 
 It can tell a maths lesson from a Fortnite montage by reading the video's title
-and channel — no AI needed, and nothing is sent anywhere. When it gets one
-wrong, tap the channel in the activity log and it will remember forever.
+and channel, with no AI needed.
 
 When it sees an app it does not recognise behaving like a game, it does **not**
 close it. It asks you, once, with two buttons. Your answer sticks.
@@ -135,7 +134,8 @@ and history too. Nothing is left behind.
 
 - **Nothing leaves the Mac.** No accounts, no telemetry, no servers. The only
   outside request is asking YouTube for a video's title, so it can tell a lesson
-  from a prank.
+  from a prank. If you choose to add a Claude API key, titles it cannot decide
+  are also sent to Claude.
 - **Your PIN is never sent over the wifi**, not even when you log in. The page
   proves it knows the PIN without transmitting it, so there is nothing to
   capture.
@@ -148,8 +148,8 @@ and history too. Nothing is left behind.
 ## For developers
 
 ```bash
-git clone https://github.com/sandipsahoo2k2/focusguard.git && cd focusguard
-npm install && npm test        # 85 tests, no real browser or apps needed
+git clone https://github.com/sandipsahoo2k2/monkguard.git && cd monkguard
+npm install && npm test        # 87 tests, no real browser or apps needed
 node dist/index.js probe       # one detection pass, printed
 ```
 
@@ -161,9 +161,6 @@ with fakes and no simulator.
 The lists worth contributing to are in `src/domain/patterns.ts`: shorts
 patterns, game sites, learning sites, music markers and the keyword weights.
 A new rule is a file in `src/domain/rules/` plus one line in its `index.ts`.
-
-Design notes and the reasoning behind each detector are in
-[PLAN.md](PLAN.md).
 
 ---
 

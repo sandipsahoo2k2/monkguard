@@ -59,7 +59,6 @@ export function judgeGame(app: AppObservation, config: Config, probes: ProbeSnap
   if (learned !== undefined) {
     return decided(learned ? 'game' : 'notGame', `confirmed in the admin page as ${learned ? 'a game' : 'not a game'}`);
   }
-  if (config.rules.allowedApps.includes(app.bundleId)) return decided('notGame', 'on the allowed list');
   if (NEVER_GAME_BUNDLES.has(app.bundleId)) return decided('notGame', 'a known non-game app');
   if (KNOWN_GAME_BUNDLES.has(app.bundleId)) return decided('game', 'a known game or game launcher');
 

@@ -2,9 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ActionExecutor } from '../dist/app/executor.js';
 import { stopTab, stopApp, notify } from '../dist/domain/actions.js';
-import { FixedClock } from '../dist/infra/clock.js';
 import { defaultState } from '../dist/domain/types.js';
-import { app, tab, at } from './helpers.js';
+import { app, tab, at, FixedClock } from './helpers.js';
 
 function build() {
   const clock = new FixedClock(at('2026-01-05T15:00:00'));
@@ -103,4 +102,20 @@ test('counters land in today, not in a void', async () => {
   const { executor, state } = build();
   await executor.run([{ type: 'count', field: 'shortsBlocked' }, { type: 'count', field: 'shortsBlocked' }]);
   assert.equal(state.today.shortsBlocked, 2);
+});
+
+test('a game that is closed and opened again gets a fresh warning', async () => {
+  const { executor, calls, clock } = build();
+  const action = stopApp(app({ name: 'Steam' }), 60, 'known launcher');
+
+  await executor.run([action]);
+  clock.advance(61_000);
+  await executor.run([action]);
+  assert.equal(calls.quit.length, 1);
+
+  await executor.run([]);                 // the game is gone
+  clock.advance(3_600_000);
+  await executor.run([action]);           // and now it is back
+  assert.equal(calls.quit.length, 1, 'warned again, not closed on sight');
+  assert.equal(calls.notices.length, 2);
 });

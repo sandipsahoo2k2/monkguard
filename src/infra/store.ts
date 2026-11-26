@@ -11,11 +11,8 @@ import {
 } from '../domain/types.js';
 
 export const APP_DIR = join(homedir(), 'Library', 'Application Support', 'MonkGuard');
-const CONFIG_PATH = join(APP_DIR, 'config.json');
-const STATE_PATH = join(APP_DIR, 'state.json');
 
 const MAX_EVENTS = 400;
-const MAX_HISTORY_DAYS = 60;
 const MAX_DOWNTIME = 50;
 
 export function log(message: string): void {
@@ -73,27 +70,9 @@ export class FileStore implements ConfigStore, Housekeeping {
     mkdirSync(this.directory, { recursive: true });
     this.config = readFile(this.configPath, defaultConfig());
     this.firstPin = this.ensurePin();
-    this.carryOverOldNames();
     this.state = readFile(this.statePath, defaultState());
     this.saveConfig();
     this.rollDay();
-  }
-
-  /** `kidName` became `displayName` when it turned out people wanted this for
-   *  themselves as much as for their children. Keep what they had typed. */
-  private carryOverOldNames(): void {
-    try {
-      if (!existsSync(this.configPath)) return;
-      const raw = JSON.parse(readFileSync(this.configPath, 'utf8')) as Record<string, unknown>;
-      // Only when the new key was never written, or a rename would undo every
-      // later edit on each restart.
-      if (raw.displayName === undefined && typeof raw.kidName === 'string' && raw.kidName) {
-        this.config.displayName = raw.kidName;
-      }
-      delete (this.config as unknown as Record<string, unknown>).kidName;
-    } catch {
-      // a config we cannot read is rewritten from the defaults anyway
-    }
   }
 
   private get configPath(): string { return join(this.directory, 'config.json'); }
@@ -144,8 +123,6 @@ export class FileStore implements ConfigStore, Housekeeping {
     this.stateView.update((state) => {
       if (!state.today.day) { state.today = emptyDay(today); return; }
       if (state.today.day === today) return;
-      state.history.unshift(state.today);
-      if (state.history.length > MAX_HISTORY_DAYS) state.history.length = MAX_HISTORY_DAYS;
       state.today = emptyDay(today);
       state.watchStreakStart = null;
       state.breakUntil = null;

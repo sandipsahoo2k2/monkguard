@@ -65,3 +65,10 @@ export function fakeProbes(overrides = {}) {
     categoryByPath: overrides.category === undefined ? {} : { '/Applications/Example.app': overrides.category },
   };
 }
+
+/** A clock that stands still until it is told to move. */
+export class FixedClock {
+  constructor(current) { this.current = current; }
+  now() { return this.current; }
+  advance(ms) { this.current = new Date(this.current.getTime() + ms); }
+}
