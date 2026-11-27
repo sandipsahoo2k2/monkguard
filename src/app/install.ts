@@ -3,7 +3,7 @@ import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { run } from '../platform/macos/exec.js';
-import { APP_DIR, log } from '../infra/store.js';
+import { APP_DIR, LISTENING_FILE, log, readListeningPort } from '../infra/store.js';
 
 export const LABEL = 'com.monkguard.agent';
 const LAUNCH_AGENTS = join(homedir(), 'Library', 'LaunchAgents');
@@ -89,11 +89,21 @@ async function stopService(): Promise<void> {
   await new Promise((resolve) => { setTimeout(resolve, 1200); });
 }
 
-async function restartService(): Promise<boolean> {
+async function startService(): Promise<void> {
   const uid = process.getuid?.() ?? 0;
   await run('/bin/launchctl', ['bootstrap', `gui/${uid}`, PLIST_PATH], 15_000);
   await run('/bin/launchctl', ['kickstart', '-k', `gui/${uid}/${LABEL}`], 15_000);
-  return (await run('/bin/launchctl', ['print', `gui/${uid}/${LABEL}`], 10_000)).includes(LABEL);
+}
+
+/** A loaded service can still be failing, so the only proof that it works is
+ *  the admin page reporting its port. */
+export async function waitForAdminPage(directory = APP_DIR, timeoutMs = 30_000): Promise<number | null> {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    const port = readListeningPort(directory);
+    if (port !== null || Date.now() >= deadline) return port;
+    await new Promise((resolve) => { setTimeout(resolve, 500); });
+  }
 }
 
 export interface InstallOptions {
@@ -105,7 +115,13 @@ export interface InstallOptions {
   pin?: string;
 }
 
-export async function install(options: InstallOptions): Promise<{ running: boolean; command: string[] }> {
+export interface InstallResult {
+  /** The port the admin page is answering on, or null if it never started. */
+  port: number | null;
+  command: string[];
+}
+
+export async function install(options: InstallOptions): Promise<InstallResult> {
   const entry = entryPoint();
   if (!existsSync(entry)) throw new Error(`cannot find ${entry}. Run "npm run build" first.`);
 
@@ -115,15 +131,18 @@ export async function install(options: InstallOptions): Promise<{ running: boole
     : process.execPath;
   const command = [executable, entry, 'run'];
   writeLaunchAgent(command);
-  const running = await restartService();
-  log(running ? 'service installed and running' : 'service installed but not running yet');
-  return { running, command };
+  rmSync(join(APP_DIR, LISTENING_FILE), { force: true });     // left over from the last run
+  await startService();
+  const port = await waitForAdminPage();
+  log(port === null ? 'service installed but not answering' : 'service installed and running');
+  return { port, command };
 }
 
 export async function uninstall(purge: boolean): Promise<void> {
   const uid = process.getuid?.() ?? 0;
   await run('/bin/launchctl', ['bootout', `gui/${uid}/${LABEL}`], 10_000);
   rmSync(PLIST_PATH, { force: true });
+  rmSync(join(APP_DIR, LISTENING_FILE), { force: true });
   rmSync(BUNDLE_PATH, { recursive: true, force: true });
   if (purge) {
     rmSync(APP_DIR, { recursive: true, force: true });

@@ -1,4 +1,4 @@
-import { createServer, IncomingMessage, ServerResponse } from 'node:http';
+import { createServer, IncomingMessage, Server, ServerResponse } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { hostname } from 'node:os';
 import { Engine } from '../app/engine.js';
@@ -6,6 +6,7 @@ import { mayReachFromNetwork } from '../domain/access.js';
 import { isHex } from '../infra/credentials.js';
 import { allowedHosts, hostIsAllowed, isLoopback, isOnOurNetwork } from '../infra/network.js';
 import { currentNetwork } from '../platform/macos/wifi.js';
+import { listenOnFreePort } from '../infra/ports.js';
 import { FileStore, log } from '../infra/store.js';
 import { adminPage, blockedPage } from './pages.js';
 import { buildRoutes } from './routes.js';
@@ -40,29 +41,43 @@ export class AdminServer {
   private readonly nonces = new Map<string, number>();
   private readonly routes: ReturnType<typeof buildRoutes>;
   private hosts = new Set<string>();
+  private server: Server | null = null;
 
   constructor(private readonly store: FileStore, engine: Engine) {
     this.routes = buildRoutes(store, engine);
   }
 
-  listen(port: number): void {
-    this.hosts = allowedHosts(port, hostname().replace(/\.local$/i, ''));
+  /** Starts on the saved port, or the next free one. Returns the port in use,
+   *  or null when the admin page could not start at all. */
+  async listen(): Promise<number | null> {
     const server = createServer((request, response) => {
       this.handle(request, response).catch((error: Error) => {
         log(`request failed: ${error.message}`);
         if (!response.headersSent) this.sendJson(response, 500, { error: 'something went wrong' });
       });
     });
-    server.on('error', (error: NodeJS.ErrnoException) => {
-      log(error.code === 'EADDRINUSE'
-        ? `port ${port} is already in use, so the admin page is off. The guard itself keeps running.`
-        : `admin server error: ${error.message}`);
-    });
-    const bind = this.store.get().bindAddress || '0.0.0.0';
-    server.listen(port, bind, () => log(
-      `admin page listening on ${bind}:${port}`
-      + (bind === '127.0.0.1' ? ' (this Mac only)' : ' (this wifi network only)'),
-    ));
+    const { bindAddress, serverPort } = this.store.get();
+    const bind = bindAddress || '0.0.0.0';
+
+    let port: number;
+    try {
+      port = await listenOnFreePort(server, serverPort, bind);
+    } catch (error) {
+      log(`the admin page is off: ${(error as Error).message}. The guard itself keeps running.`);
+      return null;
+    }
+    server.on('error', (error) => log(`admin server error: ${error.message}`));
+    this.server = server;
+    this.hosts = allowedHosts(port, hostname().replace(/\.local$/i, ''));
+    this.store.recordListening(port);
+    log(`admin page listening on ${bind}:${port}`
+      + (bind === '127.0.0.1' ? ' (this Mac only)' : ' (this wifi network only)'));
+    return port;
+  }
+
+  close(): void {
+    this.server?.close();
+    this.server?.closeAllConnections();
   }
 
   private refuse(response: ServerResponse, why: string): void {

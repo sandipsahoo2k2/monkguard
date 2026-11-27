@@ -19,6 +19,19 @@ export function log(message: string): void {
   process.stdout.write(`${new Date().toISOString().replace('T', ' ').slice(0, 19)} ${message}\n`);
 }
 
+/** Written once the admin page is accepting connections, so `monk install` and
+ *  `monk address` can say which port it really got. */
+export const LISTENING_FILE = 'listening.json';
+
+export function readListeningPort(directory = APP_DIR): number | null {
+  try {
+    const { port } = JSON.parse(readFileSync(join(directory, LISTENING_FILE), 'utf8')) as { port?: unknown };
+    return typeof port === 'number' ? port : null;
+  } catch {
+    return null;
+  }
+}
+
 export function dayString(date = new Date()): string {
   const pad = (value: number) => String(value).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
@@ -173,6 +186,19 @@ export class FileStore implements ConfigStore, Housekeeping {
         detail: 'an unreadable settings file was rewritten',
       });
     }
+  }
+
+  /** Keeps the port that worked, so the address stays the same next time. */
+  recordListening(port: number): void {
+    if (this.config.serverPort !== port) {
+      this.appendEvent({
+        kind: 'port_changed',
+        subject: `port ${port}`,
+        detail: `port ${this.config.serverPort} was in use`,
+      });
+      this.update((config) => { config.serverPort = port; });
+    }
+    writeFile(join(this.directory, LISTENING_FILE), { port });
   }
 
   // --- PIN -----------------------------------------------------------------

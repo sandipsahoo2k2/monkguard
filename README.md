@@ -36,6 +36,9 @@ your browsers on under MonkGuard.
 `http://10.0.0.42:8787`. Type it into your phone's browser, on the same wifi,
 and enter the PIN. Add it to your Home Screen if you want it to feel like an app.
 
+If another app is already using port 8787, MonkGuard takes the next free one and
+prints that instead. `monk address` shows the address again at any time.
+
 That is the whole setup. It starts again by itself every time the Mac is
 switched on.
 
@@ -149,7 +152,7 @@ and history too. Nothing is left behind.
 
 ```bash
 git clone https://github.com/sandipsahoo2k2/monkguard.git && cd monkguard
-npm install && npm test        # 87 tests, no real browser or apps needed
+npm install && npm test        # 91 tests, no real browser or apps needed
 node dist/index.js probe       # one detection pass, printed
 ```
 

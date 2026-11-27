@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 import { buildSystem } from './app/wiring.js';
+import { macNotifier } from './platform/macos/notifier.js';
 import { AdminServer } from './server/http.js';
 import { install, paths, uninstall } from './app/install.js';
 import { judgeGame } from './domain/games.js';
 import { policyStatus } from './domain/schedule.js';
 import { buildView } from './server/view.js';
-import { log } from './infra/store.js';
+import { log, readListeningPort } from './infra/store.js';
 import { run } from './platform/macos/exec.js';
 import { permissions } from './platform/macos/exec.js';
 import { macProbeReader } from './platform/macos/probes.js';
@@ -49,13 +50,21 @@ switch (command) {
     const system = buildSystem();
     const device = await readDeviceIdentity();
     await currentNetwork();
-    const port = system.store.get().serverPort;
+    const preferred = system.store.get().serverPort;
     const firstPin = system.store.takeFirstPin();
     log(`watching ${device.name} (account "${device.account}")`);
     if (firstPin) log(`a PIN was created for the admin page: ${firstPin} — change it under More`);
-    new AdminServer(system.store, system.engine).listen(port);
+    const port = await new AdminServer(system.store, system.engine).listen();
+    if (port !== null && port !== preferred) {
+      await macNotifier.notify('MonkGuard',
+        `The admin page moved to port ${port} because ${preferred} was in use.`);
+    }
     system.engine.start();
-    system.store.appendEvent({ kind: 'started', subject: 'monkguard', detail: `watching, admin page on port ${port}` });
+    system.store.appendEvent({
+      kind: 'started',
+      subject: 'monkguard',
+      detail: port === null ? 'watching, without the admin page' : `watching, admin page on port ${port}`,
+    });
     break;
   }
 
@@ -82,14 +91,21 @@ switch (command) {
     }
     const generated = system.store.takeFirstPin();
 
-    const { running } = await install({
+    const preferred = system.store.get().serverPort;
+
+    const installed = await install({
       appBundle: !flag('no-app-bundle'),
       signIdentity: value('sign'),
     });
-    console.log(running
-      ? '\nMonk is running, and starts again every time this Mac logs in.'
-      : `\nInstalled, but it is not running. Check ${paths.LOG_DIR}/monkguard.log`);
-    await printAddresses(system.store.get().serverPort);
+    if (installed.port === null) {
+      console.log(`\nInstalled, but the admin page did not start. Check ${paths.LOG_DIR}/monkguard.log`);
+    } else {
+      console.log('\nMonkGuard is running, and starts again every time this Mac logs in.');
+      if (installed.port !== preferred) {
+        console.log(`\n  Port ${preferred} was already in use, so MonkGuard is using ${installed.port}.`);
+      }
+      await printAddresses(installed.port);
+    }
     if (generated && !pin) {
       console.log(`\n  The PIN for the admin page is  ${generated}`);
       console.log('  It was made up just now and is written nowhere else. Change it under More.');
@@ -103,6 +119,14 @@ switch (command) {
 
     Check it worked with:  monk probe
 `);
+    break;
+  }
+
+  /** Where to open the admin page, for when the address or port has changed. */
+  case 'address': {
+    const port = readListeningPort();
+    if (port === null) console.log('The admin page has not started yet. Run: monk install');
+    else await printAddresses(port);
     break;
   }
 
@@ -179,10 +203,11 @@ switch (command) {
   monk install                install and start it, and start it at every login
       --pin <pin>             set the admin PIN now, instead of being given one
       --this-mac-only         do not answer other devices on the wifi
-      --port <port>           admin page port (default 8787)
+      --port <port>           preferred admin page port (default 8787)
       --no-app-bundle         run node directly instead of the signed wrapper
       --sign <identity>       codesign with a Developer ID instead of ad-hoc
   monk run                    run in the foreground (what the login service calls)
+  monk address                where to open the admin page
   monk probe                  one detection pass, printed
   monk status                 the current state as JSON
   monk set-pin <pin>          change the admin PIN
